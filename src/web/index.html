@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Second Draft</title>
+  <meta name="description" content="A writing coach that points at exact sentences. Deterministic tools measure the draft; the coach picks the three fixes that matter most.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <a class="mark" href="/"><span class="mark-glyph" aria-hidden="true">¶</span> Second Draft</a>
+    <span class="mode" id="mode">Loading</span>
+  </header>
+
+  <main class="desk">
+    <section class="page" aria-label="Draft">
+      <div id="editor">
+        <fieldset class="goals">
+          <legend>What should this draft get better at?</legend>
+          <div id="goals" class="chips"></div>
+        </fieldset>
+        <label class="sr-only" for="draft">Your draft</label>
+        <textarea id="draft" class="draft" spellcheck="true" placeholder="Paste a draft here, up to 3,000 words. A story opening, an essay, a cover letter."></textarea>
+        <div class="actions">
+          <span class="count" id="count">0 / 3,000 words</span>
+          <span class="samples">Try: <button class="link" id="sample-fiction" type="button">fiction opening</button> · <button class="link" id="sample-cover" type="button">cover letter</button></span>
+          <label class="toggle" id="model-toggle" hidden><input type="checkbox" id="use-model" checked> Use model</label>
+          <button class="primary" id="run" type="button">Coach this draft</button>
+        </div>
+        <p class="error" id="error" role="alert" hidden></p>
+      </div>
+
+      <div id="review" hidden>
+        <div class="review-bar">
+          <button class="ghost" id="revise" type="button">Revise draft</button>
+          <span class="legend"><span class="key key-fix">1</span> top fixes <span class="key key-hl">word</span> other findings, click any</span>
+        </div>
+        <article id="rendered" class="draft rendered" aria-label="Your draft with highlights"></article>
+      </div>
+    </section>
+
+    <aside class="coach" aria-label="Coaching">
+      <div id="intro" class="intro">
+        <h1>Three fixes, each pinned to a sentence you wrote.</h1>
+        <p>Eleven detectors measure the draft: passive voice, filler and hedges, adverbs, cliches, repeated words, dialogue tags, named emotions, sentence and paragraph rhythm, the opening line, and dense sentences.</p>
+        <p>The coach ranks what they find by leverage for your goal and gives you a before and after, the reason, and a short exercise. Every quote is checked against your text before you see it.</p>
+        <p class="hint">Drafts stay in this browser so you can watch the numbers move between revisions.</p>
+      </div>
+
+      <div id="result" hidden>
+        <div class="coached-by">Coached by <strong id="coached-by"></strong></div>
+        <p class="summary" id="summary"></p>
+        <div id="notes"></div>
+        <div id="fixes" class="fixes"></div>
+        <section class="panel">
+          <h2>Metrics</h2>
+          <div id="metrics" class="metrics"></div>
+        </section>
+        <details class="panel trace-panel" id="trace"></details>
+      </div>
+
+      <section class="panel" id="progress" hidden>
+        <div class="panel-head"><h2>Progress</h2><button class="link small" id="clear-history" type="button">Clear</button></div>
+        <div id="progress-list"></div>
+      </section>
+    </aside>
+  </main>
+
+  <div id="inspector" class="sheet" role="dialog" aria-label="Findings" hidden></div>
+
+  <footer class="foot">
+    <p>Tools measure the text. The coach decides what matters and explains it. <a href="https://github.com/frogr/second-draft">Source</a></p>
+  </footer>
+</body>
+</html>
