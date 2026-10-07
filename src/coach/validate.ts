@@ -39,15 +39,12 @@ export interface ValidationResult {
 export const MAX_ITEMS = 3;
 const LIMITS = { title: 80, why: 700, exercise: 500 };
 
-/** Lower case, straight quotes, no punctuation, single spaces. Used only to decide "is the rewrite really different". */
+/**
+ * Lower case, straight quotes, single spaces. Punctuation is kept on purpose: splitting a sentence
+ * or turning a comma into a full stop is a real rewrite. Used only to decide "is the rewrite really different".
+ */
 export function normalize(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/[’‘]/g, "'")
-    .replace(/[“”]/g, '"')
-    .replace(/[^\p{L}\p{N}' ]+/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return s.toLowerCase().replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, ' ').trim();
 }
 
 function straighten(s: string): string {

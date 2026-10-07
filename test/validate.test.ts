@@ -19,7 +19,7 @@ describe('validateItems', () => {
     [{ ...good, quote: 'was really angry' }, 'quote_not_in_sentence'],
     [{ ...good, sentence_index: 0 }, 'quote_not_in_sentence'],
     [{ ...good, quote: '' }, 'quote_empty'],
-    [{ ...good, rewrite: 'Was very angry!' }, 'rewrite_same'],
+    [{ ...good, rewrite: '  WAS very   angry ' }, 'rewrite_same'],
     [{ ...good, rewrite: 'x'.repeat(500) }, 'rewrite_too_long'],
     [{ ...good, why: '' }, 'missing_field'],
     [{ ...good, sentence_index: 1.5 }, 'missing_field'],
@@ -46,6 +46,13 @@ describe('validateItems', () => {
     const { valid, errors } = validateItems(items, sentences);
     expect(valid.map((v) => v.before)).toEqual(['was very angry', 'was locked']);
     expect(errors.map((e) => e.code).sort()).toEqual(['duplicate_span', 'too_many_items']);
+  });
+
+  it('counts punctuation-only rewrites as changes', () => {
+    const { valid } = validateItems([{ ...good, sentence_index: 2, quote: '“Leave,” she said.', rewrite: '“Leave.” She said it once.' }], sentences);
+    expect(valid).toHaveLength(1);
+    const split = validateItems([{ ...good, quote: 'She was very angry.', rewrite: 'She was. Very angry.' }], sentences);
+    expect(split.valid).toHaveLength(1);
   });
 
   it('marks bracketed rewrites as scaffolds and unknown detectors as other', () => {
