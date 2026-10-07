@@ -137,7 +137,7 @@ textarea.draft:focus { border-color: var(--accent-line); }
 .panel { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
 .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
 .panel-head { display: flex; justify-content: space-between; align-items: baseline; }
-#result .panel { margin-top: 18px; }
+#result-extra { display: flex; flex-direction: column; gap: 18px; }
 
 .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
 .metric-head { display: flex; flex-direction: column; margin-bottom: 6px; }
@@ -195,6 +195,10 @@ textarea.draft:focus { border-color: var(--accent-line); }
 
 .foot { max-width: 1240px; margin: 0 auto; padding: 0 32px 36px; color: var(--faint); font-size: 12.5px; }
 
+@media (min-width: 1021px) {
+  /* the draft stays in view while the coaching column scrolls */
+  .page { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; }
+}
 @media (max-width: 1020px) {
   .desk { grid-template-columns: 1fr; }
 }

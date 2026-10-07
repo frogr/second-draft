@@ -60,8 +60,7 @@ try {
   await desk.fill('#draft', SAMPLES.fictionRevised.text);
   await coach(desk);
   await desk.screenshot({ path: `${OUT}/05-second-draft.png` });
-  await desk.locator('#metrics').scrollIntoViewIfNeeded();
-  await desk.evaluate(() => document.querySelector('.panel')?.scrollIntoView({ block: 'start' }));
+  await desk.evaluate(() => document.querySelector('#progress')?.scrollIntoView({ block: 'start' }));
   await desk.screenshot({ path: `${OUT}/06-progress-metrics.png` });
 
   // cover letter with the "sounds like me" goal
@@ -72,13 +71,15 @@ try {
   await desk.screenshot({ path: `${OUT}/07-cover-letter.png` });
 
   // phone
-  const phone = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  const phone = await browser.newPage({ viewport: { width: 390, height: 844 } });
   await phone.goto(BASE);
   await phone.waitForSelector('.chip');
   await phone.click('#sample-fiction');
   await coach(phone);
-  await phone.evaluate(() => document.querySelector('#fixes')?.scrollIntoView({ block: 'start' }));
+  await phone.evaluate(() => window.scrollTo(0, 0));
   await phone.screenshot({ path: `${OUT}/08-phone.png` });
+  await phone.evaluate(() => document.querySelector('#fixes')?.scrollIntoView({ block: 'start' }));
+  await phone.screenshot({ path: `${OUT}/09-phone-fix.png` });
 
   await browser.close();
   console.log(`screenshots saved to ${OUT}`);

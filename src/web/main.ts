@@ -186,11 +186,12 @@ function openInspector(findings: Finding[], item?: CoachingItem) {
   const sheet = $('inspector');
   const list = h('ul', { class: 'finding-list' });
   for (const f of findings) list.append(h('li', {}, h('span', { class: `tag d-${f.detector}` }, DETECTOR_LABELS[f.detector]), ' ', f.message));
-  sheet.replaceChildren(
+  const parts: Node[] = [
     h('div', { class: 'sheet-head' }, h('strong', {}, findings.length ? `${findings.length} finding${findings.length > 1 ? 's' : ''} here` : 'Coached sentence'), h('button', { class: 'ghost', onclick: closeInspector, 'aria-label': 'Close' }, 'Close')),
-    findings.length ? list : null,
-    item ? h('button', { class: 'link', onclick: () => focusCard(item.rank) }, `Go to fix ${item.rank}: ${item.title}`) : null,
-  );
+  ];
+  if (findings.length) parts.push(list);
+  if (item) parts.push(h('button', { class: 'link', onclick: () => focusCard(item.rank) }, `Go to fix ${item.rank}: ${item.title}`));
+  sheet.replaceChildren(...parts);
   sheet.hidden = false;
 }
 
@@ -310,7 +311,7 @@ function renderProgress() {
         {},
         h('span', { class: 'd-name' }, `Draft ${i + 1}`),
         h('span', { class: 'd-meta' }, `${when.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · ${d.metrics.words} words · ${d.findings} findings`),
-        prev ? h('span', { class: `delta ${delta < 0 ? 'good' : delta > 0 ? 'bad' : ''}` }, delta === 0 ? 'same' : `${delta > 0 ? '+' : ''}${delta}`) : h('span', { class: 'delta' }, 'first'),
+        prev ? h('span', { class: `delta ${delta < 0 ? 'good' : delta > 0 ? 'bad' : ''}` }, delta === 0 ? 'same' : `${delta > 0 ? '+' : ''}${delta} findings`) : h('span', { class: 'delta' }, 'first'),
         h('button', { class: 'link small', onclick: () => reopen(d) }, 'Open'),
       ),
     );
@@ -320,7 +321,14 @@ function renderProgress() {
   if (cmp?.length) {
     wrap.append(
       h('p', { class: 'hint' }, 'Since your previous draft:'),
-      h('ul', { class: 'changes' }, ...cmp.map((c) => h('li', { class: c.verdict }, `${c.label}: ${fmt(c.before)} → ${fmt(c.after)}`))),
+      h(
+        'ul',
+        { class: 'changes' },
+        ...cmp.map((c) => {
+          const show = (v: number) => (c.key === 'passiveRate' ? `${Math.round(v * 100)}%` : fmt(v));
+          return h('li', { class: c.verdict }, `${c.label.replace(' (share)', '')}: ${show(c.before)} → ${show(c.after)}`);
+        }),
+      ),
     );
   }
 }
@@ -344,6 +352,7 @@ function renderResult(r: CoachResult, saved: boolean) {
   renderDraft(state.draftText, r.analysis.findings, r.items);
   $('intro').hidden = true;
   $('result').hidden = false;
+  $('result-extra').hidden = false;
   $('coached-by').textContent = r.mode === 'deterministic' ? 'Deterministic coach' : `${r.model} with tool use`;
   $('summary').textContent = r.summary;
   const notes = [...r.notes];
