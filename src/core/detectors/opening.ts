@@ -2,7 +2,10 @@ import type { Finding } from '../types.js';
 import { GENERIC_OPENING_RE, THROAT_CLEARING_RE, WAKING_RE, WEATHER_WORDS } from '../lexicon/words.js';
 import { finding, type DetectorContext } from './context.js';
 
-/** Checks only the first sentence. At most one finding, the most important one. */
+/**
+ * Checks only the first sentence. At most one finding, the most important one.
+ * Length is left to the sentence length detector: in the eval, a separate "long opening" rule only produced false alarms.
+ */
 export function detectOpening(ctx: DetectorContext): Finding[] {
   // skip a salutation line like "Dear Hiring Manager," and judge the first real sentence
   const [s0, s1] = ctx.seg.sentences;
@@ -14,6 +17,5 @@ export function detectOpening(ctx: DetectorContext): Finding[] {
   if (WAKING_RE.test(t)) return f('waking', 'Opening on a character waking up delays the story', 2);
   if (WEATHER_WORDS.test(t) && first.wordCount <= 25 && !/["“]/.test(t)) return f('weather', 'Opening on the weather delays the story', 2);
   if (THROAT_CLEARING_RE.test(t)) return f('throat_clearing', 'The first sentence starts with "there is" or "it was"; lead with the subject', 1);
-  if (first.wordCount >= 35) return f('long', `The first sentence is ${first.wordCount} words; give the reader a shorter way in`, 2);
   return [];
 }

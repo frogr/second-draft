@@ -68,6 +68,14 @@ describe('repetition', () => {
   it('flags a content word repeated within the window', () => {
     expect(spans('The lantern swung. Under the lantern, moths gathered.', 'repetition')).toEqual(['lantern']);
   });
+  it('skips names that start a sentence and deliberate repeated phrases', () => {
+    expect(spans('Marcus parked. The office was dark. Marcus rang the bell.', 'repetition')).toEqual([]);
+    expect(spans('Every summer we drove north, and every summer it rained.', 'repetition')).toEqual([]);
+    expect(spans('The road gave way to fields and the fields gave way to dark.', 'repetition')).toEqual(['fields']);
+  });
+  it('still flags an echo that shares only a function word', () => {
+    expect(spans('The kitchen smelled of toast, and the hall smelled of it too.', 'repetition')).toEqual(['smelled']);
+  });
   it('ignores stopwords and words far apart', () => {
     const far = `The lantern swung. ${'And then it was so. '.repeat(9)}The lantern again.`;
     expect(spans(far, 'repetition')).toEqual([]);
@@ -113,6 +121,9 @@ describe('rhythm, opening and density', () => {
     expect(found('Dear Ms. Park,\n\nI am writing to apply for the role.', 'opening')[0]!.kind).toBe('generic');
     expect(found('The alarm went off at six.', 'opening')[0]!.kind).toBe('waking');
     expect(found('Mara stole the boat at dawn.', 'opening')).toEqual([]);
+    const longOpening = 'When I started tutoring algebra at the public library in Queens, I had four students, a borrowed whiteboard and no idea how to explain negative numbers to a nine-year-old who had already decided she hated math.';
+    expect(found(longOpening, 'opening')).toEqual([]);
+    expect(found(longOpening, 'sentence_length')).toHaveLength(1);
   });
   it('flags nominalization-heavy sentences', () => {
     const t = 'The implementation of the optimization required the consideration of the organization and the establishment of documentation.';
