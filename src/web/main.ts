@@ -53,10 +53,12 @@ function renderGoals() {
   const wrap = $('goals');
   wrap.replaceChildren();
   for (const g of state.config?.goals ?? [{ id: 'balanced', label: 'Balanced' }]) {
-    const id = `goal-${g.id}`;
-    const input = h('input', { type: 'radio', name: 'goal', id, value: g.id, onchange: () => (state.goal = g.id) }) as HTMLInputElement;
-    input.checked = state.goal === g.id;
-    wrap.append(h('span', { class: 'chip' }, input, h('label', { for: id }, g.label)));
+    const chip = h('button', { class: 'chip', type: 'button', 'aria-pressed': String(state.goal === g.id), 'data-goal': g.id }, g.label);
+    chip.addEventListener('click', () => {
+      state.goal = g.id;
+      wrap.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+    });
+    wrap.append(chip);
   }
 }
 
@@ -185,12 +187,12 @@ function onDraftClick(ev: Event) {
 function openInspector(findings: Finding[], item?: CoachingItem) {
   const sheet = $('inspector');
   const list = h('ul', { class: 'finding-list' });
-  for (const f of findings) list.append(h('li', {}, h('span', { class: `tag d-${f.detector}` }, DETECTOR_LABELS[f.detector]), ' ', f.message));
+  for (const f of findings) list.append(h('li', {}, h('span', { class: `pill d-${f.detector}` }, DETECTOR_LABELS[f.detector]), ' ', f.message));
   const parts: Node[] = [
-    h('div', { class: 'sheet-head' }, h('strong', {}, findings.length ? `${findings.length} finding${findings.length > 1 ? 's' : ''} here` : 'Coached sentence'), h('button', { class: 'ghost', onclick: closeInspector, 'aria-label': 'Close' }, 'Close')),
+    h('div', { class: 'sheet-head' }, h('strong', {}, findings.length ? `${findings.length} finding${findings.length > 1 ? 's' : ''} here` : 'Coached sentence'), h('button', { class: 'button button--quiet button--small', onclick: closeInspector, 'aria-label': 'Close' }, 'Close')),
   ];
   if (findings.length) parts.push(list);
-  if (item) parts.push(h('button', { class: 'link', onclick: () => focusCard(item.rank) }, `Go to fix ${item.rank}: ${item.title}`));
+  if (item) parts.push(h('button', { class: 'link-button', onclick: () => focusCard(item.rank) }, `Go to fix ${item.rank}: ${item.title}`));
   sheet.replaceChildren(...parts);
   sheet.hidden = false;
 }
@@ -228,25 +230,25 @@ function diffBlock(label: string, parts: ReturnType<typeof wordDiff>, keep: 'del
       p.append(mark);
     }
   }
-  return h('div', { class: 'diff-wrap' }, h('div', { class: 'diff-label' }, label), p);
+  return h('div', { class: 'diff-wrap' }, h('div', { class: 'rlabel' }, label), p);
 }
 
 function card(item: CoachingItem) {
   const parts = wordDiff(item.before, item.after);
   return h(
     'article',
-    { class: 'fix-card', id: `fix-${item.rank}`, tabindex: '-1' },
+    { class: 'panel fix-card', id: `fix-${item.rank}`, tabindex: '-1' },
     h(
       'header',
       {},
       h('span', { class: 'rank' }, String(item.rank)),
       h('div', {}, h('h3', {}, item.title), h('div', { class: 'meta' }, item.detector === 'other' ? 'General' : DETECTOR_LABELS[item.detector as DetectorId], ` · sentence ${item.sentenceIndex + 1}`, item.source === 'deterministic' && state.result?.mode !== 'deterministic' ? ' · from the deterministic coach' : '')),
-      h('button', { class: 'ghost small', onclick: () => focusSentence(item.rank) }, 'Show in draft'),
+      h('button', { class: 'button button--quiet button--tiny', onclick: () => focusSentence(item.rank) }, 'Show in draft'),
     ),
     diffBlock('Before', parts, 'del'),
     diffBlock(item.afterKind === 'scaffold' ? 'After (fill in the brackets)' : 'After', parts, 'ins'),
-    h('p', { class: 'why' }, item.why),
-    h('div', { class: 'exercise' }, h('div', { class: 'diff-label' }, 'Exercise'), h('p', {}, item.exercise)),
+    h('div', { class: 'rlabel' }, 'Why'), h('p', { class: 'why' }, item.why),
+    h('div', { class: 'exercise' }, h('div', { class: 'rlabel' }, 'Exercise'), h('p', {}, item.exercise)),
     item.leverage ? h('details', { class: 'leverage' }, h('summary', {}, `Leverage ${fmt(item.leverage.score)}`), h('p', {}, item.leverage.explanation)) : null,
   );
 }
@@ -275,9 +277,10 @@ function renderMetrics() {
     const max = Math.max(...values, 0.0001);
     const rows = h('div', { class: 'bars' });
     values.forEach((v, i) => {
-      const bar = h('span', { class: 'bar' });
-      bar.style.setProperty('--w', `${Math.max(2, (v / max) * 100)}%`);
-      rows.append(h('div', { class: `bar-row${i === values.length - 1 ? ' now' : ''}` }, h('span', { class: 'bar-name' }, names[i]!), h('span', { class: 'track' }, bar), h('span', { class: 'bar-val' }, `${fmt(v)}${m.unit ?? ''}`)));
+      const fill = h('i', {});
+      fill.style.setProperty('--w', `${Math.max(2, (v / max) * 100)}%`);
+      const bar = h('span', { class: 'bar' }, fill);
+      rows.append(h('div', { class: `bar-row${i === values.length - 1 ? ' now' : ''}` }, h('span', { class: 'lbl' }, names[i]!), bar, h('span', { class: 'num' }, `${fmt(v)}${m.unit ?? ''}`)));
     });
     wrap.append(h('div', { class: 'metric' }, h('div', { class: 'metric-head' }, h('span', {}, m.label), h('span', { class: 'hint' }, m.hint)), rows));
   }
@@ -300,7 +303,7 @@ function renderProgress() {
   wrap.replaceChildren();
   const box = $('progress');
   box.hidden = state.history.length === 0;
-  const list = h('ol', { class: 'drafts' });
+  const list = h('ol', { class: 'rows drafts' });
   state.history.forEach((d, i) => {
     const prev = state.history[i - 1];
     const delta = prev ? d.findings - prev.findings : 0;
@@ -312,7 +315,7 @@ function renderProgress() {
         h('span', { class: 'd-name' }, `Draft ${i + 1}`),
         h('span', { class: 'd-meta' }, `${when.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · ${d.metrics.words} words · ${d.findings} findings`),
         prev ? h('span', { class: `delta ${delta < 0 ? 'good' : delta > 0 ? 'bad' : ''}` }, delta === 0 ? 'same' : `${delta > 0 ? '+' : ''}${delta} findings`) : h('span', { class: 'delta' }, 'first'),
-        h('button', { class: 'link small', onclick: () => reopen(d) }, 'Open'),
+        h('button', { class: 'link-button small', onclick: () => reopen(d) }, 'Open'),
       ),
     );
   });
@@ -357,7 +360,7 @@ function renderResult(r: CoachResult, saved: boolean) {
   $('summary').textContent = r.summary;
   const notes = [...r.notes];
   if (!saved) notes.push('This browser blocked local storage, so drafts will not be kept after you leave.');
-  $('notes').replaceChildren(...notes.map((n) => h('p', { class: 'note' }, n)));
+  $('notes').replaceChildren(...notes.map((n) => h('p', { class: 'note note--warn' }, n)));
   $('fixes').replaceChildren(...(r.items.length ? r.items.map(card) : [h('p', { class: 'hint' }, 'Nothing stood out. Read it aloud once more and trust your ear.')]));
   renderMetrics();
   renderProgress();
@@ -377,6 +380,7 @@ async function boot() {
   const mode = $('mode');
   const modelToggle = $('model-toggle');
   if (llm?.available) {
+    mode.className = 'pill pill--good';
     mode.replaceChildren(h('span', { class: 'wide' }, 'Model available: '), llm.model ?? 'model');
     modelToggle.hidden = false;
   } else {
