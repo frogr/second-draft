@@ -30,9 +30,36 @@ export function tidy(s: string): string {
   return capitalizeFirst(t);
 }
 
+/**
+ * Cuts (empty replacements) take their punctuation with them where it clearly belongs to them:
+ * "I really, truly believe" becomes "I believe", a parenthetical ", honestly," goes with both
+ * commas, and a sentence-opening "Honestly," goes with its comma.
+ */
+function expandCuts(text: string, edits: Edit[]): Edit[] {
+  const sorted = [...edits].sort((a, b) => a.start - b.start);
+  const merged: Edit[] = [];
+  for (const e of sorted) {
+    const last = merged[merged.length - 1];
+    // adjacent cuts, even across a comma ("really, truly"), become one cut
+    if (last && last.replacement === '' && e.replacement === '' && /^\s*,?\s*$/.test(text.slice(last.end, e.start))) last.end = Math.max(last.end, e.end);
+    else merged.push({ ...e });
+  }
+  return merged.map((e) => {
+    if (e.replacement !== '') return e;
+    const after = text.slice(e.end).match(/^\s*,/);
+    if (!after) return e;
+    const before = text.slice(0, e.start).match(/,\s*$/);
+    if (before) return { start: e.start - before[0].length, end: e.end + after[0].length, replacement: ' ' };
+    // at the start of a sentence the comma goes too ("Honestly, it works"); mid-sentence it may
+    // belong to the next phrase ("said grimly, crouching"), so it stays
+    if (/^[\s"“(]*$/.test(text.slice(0, e.start))) return { start: e.start, end: e.end + after[0].length, replacement: '' };
+    return e;
+  });
+}
+
 /** Apply non-overlapping edits (offsets relative to `text`), right to left, then tidy. */
 export function applyEdits(text: string, edits: Edit[]): string {
-  const sorted = [...edits].sort((a, b) => b.start - a.start);
+  const sorted = expandCuts(text, edits).sort((a, b) => b.start - a.start);
   let out = text;
   let floor = Infinity;
   for (const e of sorted) {
@@ -50,7 +77,10 @@ export function pastTense(participle: string): string {
 
 const TO_OBJECT: Record<string, string> = { i: 'me', he: 'him', she: 'her', they: 'them', we: 'us' };
 const TO_SUBJECT: Record<string, string> = { me: 'I', him: 'he', her: 'she', them: 'they', us: 'we' };
-const AGENT_STOP = /^(in|on|at|during|after|before|for|with|from|to|last|yesterday|today|and|but|because|while|when|who|which|that)$/i;
+const AGENT_STOP = /^(in|on|at|during|after|before|for|with|from|to|last|yesterday|today|and|but|because|while|when|who|which|that|\w+ing)$/i;
+/** "by Friday" is a deadline, not a doer. */
+const TIME_WORDS = /^(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|tonight|noon|midnight|then|now|morning|evening|night|january|february|march|april|may|june|july|august|september|october|november|december|next|the end)\b/i;
+const MODALS = /\b(to|should|would|could|must|will|can|may|might|shall)\s*$/i;
 
 /**
  * Rewrite a simple passive clause in active voice.
@@ -60,12 +90,20 @@ const AGENT_STOP = /^(in|on|at|during|after|before|for|with|from|to|last|yesterd
  */
 export function activeVoice(sentence: string, beStart: number, partEnd: number): { text: string; scaffold: boolean } | null {
   const before = sentence.slice(0, beStart);
+  // "should be directed", "to be submitted": rebuilding needs the base verb, so leave these to the writer
+  if (MODALS.test(before)) return null;
   let clauseStart = Math.max(before.lastIndexOf(', '), before.lastIndexOf('; '));
   clauseStart = clauseStart >= 0 ? clauseStart + 2 : 0;
+  // a passive inside a "that" or "which" clause: the subject starts after the complementizer
+  const comp = [...before.slice(clauseStart).matchAll(/\b(?:that|which|who)\s+/gi)].pop();
+  if (comp) clauseStart += comp.index! + comp[0].length;
   const conj = sentence.slice(clauseStart, beStart).match(/^(and|but|so|then|yet)\s+/i);
   if (conj) clauseStart += conj[0].length;
   const lead = sentence.slice(0, clauseStart);
-  const subject = sentence.slice(clauseStart, beStart).trim();
+  let subject = sentence.slice(clauseStart, beStart).trim();
+  // "had been found": the auxiliary stays with the verb ("had found")
+  const aux = subject.match(/\s+(had|has|have)$/i);
+  if (aux) subject = subject.slice(0, -aux[0].length);
   if (!subject || subject.split(/\s+/).length > 6 || /["“”]/.test(subject)) return null;
   const middle = sentence.slice(beStart, partEnd).split(/\s+/);
   const participle = middle[middle.length - 1]!.replace(/[^A-Za-z]/g, '');
@@ -74,7 +112,7 @@ export function activeVoice(sentence: string, beStart: number, partEnd: number):
   let agent = '[Who?]';
   let scaffold = true;
   const by = rest.match(/^\s+by\s+/i);
-  if (by) {
+  if (by && !TIME_WORDS.test(rest.slice(by[0].length))) {
     const words = rest.slice(by[0].length).split(/(\s+)/);
     const taken: string[] = [];
     for (const w of words) {
@@ -92,10 +130,23 @@ export function activeVoice(sentence: string, beStart: number, partEnd: number):
     agent = TO_SUBJECT[agentText.toLowerCase()] ?? agentText;
     rest = rest.slice(by[0].length + agentText.length);
     scaffold = false;
+    // a relative clause describes the agent, so it moves with it: "by her father, who had left," -> "Her father, who had left, wrote"
+    const restrictive = rest.match(/^\s+(?:who|which)\b[^,.;!?]*/i);
+    if (restrictive) {
+      agent = `${agent}${restrictive[0]}`;
+      rest = rest.slice(restrictive[0].length);
+    }
+    const rel = rest.match(/^(,\s*(?:who|whom|whose|which)\b[^,.;!?]*)([,.;!?]?)/i);
+    if (rel) {
+      agent = `${agent}${rel[1]},`;
+      rest = rel[2] === ',' ? rest.slice(rel[0].length) : rest.slice(rel[1]!.length);
+    }
   }
-  const obj = TO_OBJECT[subject.toLowerCase()] ?? lowerFirst(subject);
-  const verb = [...adverbs, pastTense(participle)].join(' ');
-  const clause = `${agent} ${verb} ${obj}${rest}`;
+  // "It was decided by X that ..." has a dummy subject: the that-clause is the real object
+  const dummy = subject.toLowerCase() === 'it' && /^\s+that\b/i.test(rest);
+  const obj = dummy ? '' : ` ${TO_OBJECT[subject.toLowerCase()] ?? lowerFirst(subject)}`;
+  const verb = aux ? [aux[1]!.toLowerCase(), ...adverbs, participle].join(' ') : [...adverbs, pastTense(participle)].join(' ');
+  const clause = `${agent} ${verb}${obj}${rest}`;
   const text = lead ? `${lead}${clause.startsWith('[') ? clause : lowerFirst(clause)}` : capitalizeFirst(clause);
   return { text: tidy(text), scaffold };
 }

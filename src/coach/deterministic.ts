@@ -214,7 +214,7 @@ function why(f: Finding, goal: Goal, cuts: Finding[]): string {
     filler: f.kind === 'hedge' ? `${q(f.text)} softens a point you clearly believe. Say it straight and let the reader decide.` : f.kind === 'wordy' ? `${q(f.text)} takes several words to do the job of ${f.replacement ? q(f.replacement) : 'none'}.` : `${q(f.text)} is padding. The sentence says the same thing without it, and says it harder.`,
     adverb: f.kind === 'verb_adverb' ? `${q(f.text)} is propping up a weak verb. One precise verb gives the reader a picture instead of an instruction.` : f.kind === 'opener' ? `${q(f.text)} announces a surprise instead of letting the action surprise.` : `${q(f.text)} tells the reader how to read the sentence. Check that the sentence needs it.`,
     cliche: `${q(f.text)} is a phrase readers have seen so often they skim it. Your own wording makes them slow down.`,
-    repetition: `${q(f.text)} appears again a few words after the last one. The echo pulls attention away from the meaning.`,
+    repetition: `${q(f.text)} appears again a few words after the last one. An accidental echo pulls attention away from the meaning. If you repeated it on purpose, for rhythm, keep it.`,
     dialogue_tag: f.kind === 'action_tag' ? `People cannot ${f.text.replace(/ed$/, '')} words. A separate beat keeps the gesture and fixes the grammar.` : f.kind === 'adverb_tag' ? `The adverb explains the line. If the line is right, the reader already hears the tone.` : `${q(f.text)} pulls the eye off the dialogue. "Said" is invisible, which is the point.`,
     show_tell: `${q(f.text)} names the emotion, so the reader is told instead of made to feel it. Show what it does to the body, the voice or the room.`,
     sentence_length: f.kind === 'monotone' ? `Several sentences in a row have nearly the same length, so the prose drones. Change one length to restart the rhythm.` : `${f.message}. Readers hold the start in mind until the end; split it where the thought turns.`,
@@ -287,6 +287,9 @@ export function deterministicCoach(analysis: Analysis, goal: Goal, limit = 3): C
   });
 }
 
+/** Below this leverage, a fix is a polish note rather than a problem. */
+export const MINOR_LEVERAGE = 3;
+
 export function deterministicSummary(analysis: Analysis, goal: Goal, items: CoachingItem[]): string {
   const m = analysis.metrics;
   const top = Object.entries(m.counts)
@@ -296,5 +299,6 @@ export function deterministicSummary(analysis: Analysis, goal: Goal, items: Coac
     .map(([id, c]) => `${DETECTOR_LABELS[id as DetectorId].toLowerCase()} (${c})`);
   const lead = `${m.words} words, ${m.sentences} sentences, grade level ${m.gradeLevel}.`;
   if (!items.length) return `${lead} The detectors found nothing worth flagging. Read it aloud once more and trust your ear.`;
+  if (items.every((i) => (i.leverage?.score ?? 0) < MINOR_LEVERAGE)) return `${lead} Nothing major stands out. The notes below are small polish; take them or leave them.`;
   return `${lead} Most frequent: ${top.join(' and ')}. The fixes below are ranked by leverage for the "${goal}" goal, not by count.`;
 }

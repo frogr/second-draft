@@ -12,6 +12,14 @@ describe('tidy', () => {
 });
 
 describe('applyEdits', () => {
+  it('takes commas with cut words', () => {
+    const cut = (t: string, ...words: string[]) => applyEdits(t, words.map((w) => ({ start: t.indexOf(w), end: t.indexOf(w) + w.length, replacement: '' })));
+    expect(cut('I really, truly believe it.', 'really', 'truly')).toBe('I believe it.');
+    expect(cut('She read it again, very slowly, and sat down.', 'very', 'slowly')).toBe('She read it again and sat down.');
+    expect(cut('He was, honestly, tired.', 'honestly')).toBe('He was tired.');
+    expect(cut('Honestly, it works.', 'Honestly')).toBe('It works.');
+    expect(cut('"Go," Hale said grimly, crouching low.', ' grimly')).toBe('"Go," Hale said, crouching low.');
+  });
   it('applies non-overlapping edits right to left', () => {
     const t = 'I think we should leave in order to win.';
     expect(applyEdits(t, [{ start: 0, end: 7, replacement: '' }, { start: t.indexOf('in order'), end: t.indexOf(' win'), replacement: 'to' }])).toBe('We should leave to win.');
@@ -28,6 +36,26 @@ describe('activeVoice', () => {
   });
   it('handles pronouns and leading clauses', () => {
     expect(run('After lunch, she was seen by them at the pier.', 'was seen')).toEqual({ text: 'After lunch, they saw her at the pier.', scaffold: false });
+  });
+  it('drops the dummy "it" before a that-clause', () => {
+    expect(run('It was decided by the committee that the budget would be reduced.', 'was decided')).toEqual({ text: 'The committee decided that the budget would be reduced.', scaffold: false });
+  });
+  it('moves a relative clause with the agent', () => {
+    expect(run('The words were written by her father, who had been gone for years.', 'were written')).toEqual({ text: 'Her father, who had been gone for years, wrote the words.', scaffold: false });
+  });
+  it('stops the agent before an -ing phrase', () => {
+    expect(run('In my last job, reports were automated by me using Python.', 'were automated')).toEqual({ text: 'In my last job, I automated reports using Python.', scaffold: false });
+  });
+  it('treats "by Friday" as a deadline and refuses modal passives', () => {
+    expect(run('The plan was approved by Friday.', 'was approved')).toEqual({ text: '[Who?] approved the plan by Friday.', scaffold: true });
+    expect(run('Questions should be directed to the office.', 'be directed')).toBeNull();
+    expect(run('A plan is expected to be submitted by Friday.', 'be submitted')).toBeNull();
+  });
+  it('keeps had/has with the verb', () => {
+    expect(run('The body had been found by a jogger at six.', 'been found')).toEqual({ text: 'A jogger had found the body at six.', scaffold: false });
+  });
+  it('finds the subject inside a that-clause and keeps a restrictive who-clause on the agent', () => {
+    expect(run('I believe that good software is built by people who care about details.', 'is built')).toEqual({ text: 'I believe that people who care about details built good software.', scaffold: false });
   });
   it('makes a scaffold when nobody is named', () => {
     expect(run('The door was locked.', 'was locked')).toEqual({ text: '[Who?] locked the door.', scaffold: true });

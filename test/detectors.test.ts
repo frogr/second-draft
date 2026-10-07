@@ -15,6 +15,7 @@ describe('passive voice', () => {
   });
   it('ignores states and active past continuous', () => {
     expect(spans('She was tired. He was walking home. They were excited about it.', 'passive')).toEqual([]);
+    expect(spans('I was burned out at work. We were fed up.', 'passive')).toEqual([]);
   });
   it('counts a stative word when an agent follows', () => {
     expect(spans('She was surprised by the noise.', 'passive')).toEqual(['was surprised']);

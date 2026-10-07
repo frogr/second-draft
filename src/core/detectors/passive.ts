@@ -33,6 +33,8 @@ export function detectPassive(ctx: DetectorContext): Finding[] {
     const next = words[j + 1];
     const byAgent = !!next && next.lower === 'by' && /^\s+$/.test(text.slice(p.end, next.start));
     if (STATIVE_PARTICIPLES.has(p.lower) && !byAgent) continue;
+    // "was burned out", "was fed up": phrasal adjectives, not something done to the subject
+    if (!byAgent && next && /^(out|up)$/.test(next.lower) && /^\s+$/.test(text.slice(p.end, next.start))) continue;
     if (inDialogue(ctx, words[i]!.start, p.end)) continue;
     out.push(
       finding(ctx, 'passive', words[i]!.start, p.end, `"${text.slice(words[i]!.start, p.end)}" is passive${byAgent ? '; the doer comes after "by"' : '; the doer is missing'}`, 2, {
