@@ -47,6 +47,8 @@ The live-model path is tested only against mocked HTTP responses. See [PROOF.md]
 | `npm run typecheck` | TypeScript over source, tests, evals and scripts |
 | `npm run screenshots` | Playwright screenshots of the production build into `docs/screenshots` |
 
+I wrote the eval labels myself, so the eval is a regression harness, not a benchmark. Some detectors score low (repeated words has 43% precision); [PROOF.md](PROOF.md) has the per-detector numbers.
+
 ## API
 
 - `GET /health` returns `{ ok, model }`.
