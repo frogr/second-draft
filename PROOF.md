@@ -144,9 +144,28 @@ Taken with Playwright (a browser automation library) against the production buil
 - `docs/screenshots/07-cover-letter.png`: the cover letter sample with the "sounds like me" goal
 - `docs/screenshots/08-phone.png`, `docs/screenshots/09-phone-fix.png`: phone width
 
+## Live agent runs (Anthropic, 2026-10-07)
+
+`npm run eval:agent` (`evals/agent.ts`) sends all 25 eval passages through `coach()` with a live provider, the same path the web app uses, with the default limits (8 turns, 60,000 tokens, 45 seconds). The goal is picked by register. One run per model; the per-passage rows are in `evals/results/agent-<model>.json` and `.md`.
+
+| | claude-haiku-4-5 | claude-haiku-5-5 | claude-sonnet-5-5 |
+| --- | --- | --- | --- |
+| Agent finished, no fallback | 25 of 25 (100.0%) | 25 of 25 (100.0%) | 25 of 25 (100.0%) |
+| First submit passed validation in full | 21 of 25 (84.0%) | 23 of 25 (92.0%) | 22 of 25 (88.0%) |
+| Items valid on the first submit | 69 of 73 (94.5%) | 65 of 65 (100.0%) | 65 of 71 (91.5%) |
+| Repair turns used, fixed everything | 4, 4 | 2, 2 | 3, 2 |
+| Items dropped after the repair turn | 0 | 0 | 2 |
+| Items backfilled by the deterministic coach | 1 | 1 | 1 |
+| Model turns per passage, mean / max | 3.2 / 4 | 2.2 / 4 | 2.1 / 3 |
+| Tokens in / out | 175,919 / 23,397 | 141,922 / 34,416 | 136,432 / 26,468 |
+| Cost for the run | $0.29 | $0.03 | $0.54 |
+| Latency per passage p50 / p95 | 10055 / 15581 ms | 7117 / 13283 ms | 8480 / 14294 ms |
+
+Every item shown passed the validator, by construction. What varied was how the model got there. Haiku 4.5 missed on quotes (four passages had an item whose quote was not verbatim) and the repair turn fixed all four. Haiku 5.5 never submitted a bad quote; its two repairs were submits with no items at all. Sonnet 5.5 had two fiction passages where every quote in the first submit failed, and after the repair turn two items were still dropped. On a clean control passage each model submitted fewer than three items and the deterministic coach filled one. Run-to-run variance was not measured.
+
 ## Not verified
 
-- **Live model mode is untested.** No API keys were available. The Anthropic and OpenAI request and response shapes follow their documented formats and are exercised only against mocked HTTP in `test/agent.test.ts`. The first real run may surface schema details (for example, which JSON Schema keywords OpenAI strict mode accepts) and prompt quality issues that mocks cannot.
+- **OpenAI live mode is untested.** Only the Anthropic path has been run live (see above). The OpenAI request and response shapes are exercised against mocked HTTP in `test/agent.test.ts`; the first real run may surface which JSON Schema keywords strict mode accepts.
 - **No deploy was done.** `render.yaml` follows Render's Blueprint format but has not been applied to a Render account.
 - **CI has not run.** `.github/workflows/ci.yml` runs the same commands as above, which pass locally on Node 22.
 - **The eval set is small and self-written.** 106 labels across 25 passages, with single-digit counts for several detectors.

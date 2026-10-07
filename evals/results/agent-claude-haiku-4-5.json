@@ -1,0 +1,678 @@
+{
+  "summary": {
+    "model": "claude-haiku-4-5",
+    "provider": "anthropic",
+    "date": "2026-10-07",
+    "passages": 25,
+    "finished": 25,
+    "fallbacks": 0,
+    "failures": {},
+    "firstSubmit": {
+      "passages": 25,
+      "allValid": 21,
+      "items": 73,
+      "valid": 69
+    },
+    "repairTurns": 4,
+    "repairFixedEverything": 4,
+    "itemsDropped": 0,
+    "itemsBackfilled": 1,
+    "itemsFromModel": 72,
+    "turns": {
+      "mean": 3.2,
+      "max": 4
+    },
+    "usage": {
+      "inputTokens": 175919,
+      "outputTokens": 23397
+    },
+    "costUsd": 0.2929,
+    "latencyMs": {
+      "p50": 10055,
+      "p95": 15581
+    }
+  },
+  "byRegister": [
+    {
+      "register": "fiction",
+      "n": 11,
+      "finished": 11,
+      "firstClean": 10,
+      "repaired": 1,
+      "meanTurns": 3.1
+    },
+    {
+      "register": "cover_letter",
+      "n": 4,
+      "finished": 4,
+      "firstClean": 2,
+      "repaired": 2,
+      "meanTurns": 3.5
+    },
+    {
+      "register": "essay",
+      "n": 4,
+      "finished": 4,
+      "firstClean": 4,
+      "repaired": 0,
+      "meanTurns": 3
+    },
+    {
+      "register": "business",
+      "n": 3,
+      "finished": 3,
+      "firstClean": 2,
+      "repaired": 1,
+      "meanTurns": 3
+    },
+    {
+      "register": "personal",
+      "n": 3,
+      "finished": 3,
+      "firstClean": 3,
+      "repaired": 0,
+      "meanTurns": 3.3
+    }
+  ],
+  "rows": [
+    {
+      "id": "p01-motel",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 58,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6499,
+      "outputTokens": 871,
+      "ms": 9931,
+      "notes": []
+    },
+    {
+      "id": "p02-letter",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 52,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6722,
+      "outputTokens": 845,
+      "ms": 9981,
+      "notes": []
+    },
+    {
+      "id": "p03-late",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 30,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6421,
+      "outputTokens": 718,
+      "ms": 8153,
+      "notes": []
+    },
+    {
+      "id": "p04-analyst",
+      "register": "cover_letter",
+      "goal": "voice",
+      "words": 61,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 7209,
+      "outputTokens": 968,
+      "ms": 11825,
+      "notes": []
+    },
+    {
+      "id": "p05-stories",
+      "register": "essay",
+      "goal": "clearer",
+      "words": 53,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6804,
+      "outputTokens": 927,
+      "ms": 10915,
+      "notes": []
+    },
+    {
+      "id": "p06-checkin",
+      "register": "business",
+      "goal": "tighter",
+      "words": 54,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6992,
+      "outputTokens": 757,
+      "ms": 8811,
+      "notes": []
+    },
+    {
+      "id": "p07-boat",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 54,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6159,
+      "outputTokens": 958,
+      "ms": 11287,
+      "notes": []
+    },
+    {
+      "id": "p08-dent",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 42,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6481,
+      "outputTokens": 782,
+      "ms": 9473,
+      "notes": []
+    },
+    {
+      "id": "p09-scheduling",
+      "register": "cover_letter",
+      "goal": "voice",
+      "words": 49,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 2,
+          "ok": false
+        },
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 4,
+      "toolCalls": [],
+      "inputTokens": 9077,
+      "outputTokens": 1317,
+      "ms": 13423,
+      "notes": []
+    },
+    {
+      "id": "p10-framework",
+      "register": "essay",
+      "goal": "clearer",
+      "words": 31,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6205,
+      "outputTokens": 877,
+      "ms": 9706,
+      "notes": []
+    },
+    {
+      "id": "p11-bus",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 52,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 2,
+          "ok": false
+        },
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 4,
+      "toolCalls": [],
+      "inputTokens": 9736,
+      "outputTokens": 1572,
+      "ms": 16341,
+      "notes": []
+    },
+    {
+      "id": "p12-committee",
+      "register": "business",
+      "goal": "tighter",
+      "words": 37,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6536,
+      "outputTokens": 753,
+      "ms": 8856,
+      "notes": []
+    },
+    {
+      "id": "p13-running",
+      "register": "personal",
+      "goal": "balanced",
+      "words": 45,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6988,
+      "outputTokens": 889,
+      "ms": 10772,
+      "notes": []
+    },
+    {
+      "id": "p14-key",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 26,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 5997,
+      "outputTokens": 941,
+      "ms": 11358,
+      "notes": []
+    },
+    {
+      "id": "p15-selfstarter",
+      "register": "cover_letter",
+      "goal": "voice",
+      "words": 53,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6614,
+      "outputTokens": 887,
+      "ms": 10962,
+      "notes": []
+    },
+    {
+      "id": "p16-trees",
+      "register": "essay",
+      "goal": "clearer",
+      "words": 34,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6090,
+      "outputTokens": 804,
+      "ms": 9676,
+      "notes": []
+    },
+    {
+      "id": "p17-ridge",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 36,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6510,
+      "outputTokens": 855,
+      "ms": 10055,
+      "notes": []
+    },
+    {
+      "id": "p18-buttons",
+      "register": "personal",
+      "goal": "balanced",
+      "words": 42,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 1,
+          "valid": 1,
+          "ok": true
+        }
+      ],
+      "modelItems": 1,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 4,
+      "toolCalls": [],
+      "inputTokens": 8531,
+      "outputTokens": 691,
+      "ms": 9646,
+      "notes": []
+    },
+    {
+      "id": "p19-vendor",
+      "register": "business",
+      "goal": "tighter",
+      "words": 47,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 2,
+          "ok": false
+        },
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 7158,
+      "outputTokens": 946,
+      "ms": 9253,
+      "notes": []
+    },
+    {
+      "id": "p20-baby",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 28,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6362,
+      "outputTokens": 770,
+      "ms": 8822,
+      "notes": []
+    },
+    {
+      "id": "p21-attention",
+      "register": "essay",
+      "goal": "clearer",
+      "words": 35,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [
+        "analyze_draft"
+      ],
+      "inputTokens": 6683,
+      "outputTokens": 823,
+      "ms": 9748,
+      "notes": []
+    },
+    {
+      "id": "p22-toast",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 33,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6197,
+      "outputTokens": 955,
+      "ms": 10821,
+      "notes": []
+    },
+    {
+      "id": "p23-tutoring",
+      "register": "cover_letter",
+      "goal": "voice",
+      "words": 73,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 2,
+          "ok": false
+        },
+        {
+          "submitted": 2,
+          "valid": 2,
+          "ok": true
+        }
+      ],
+      "modelItems": 2,
+      "backfilled": 1,
+      "dropped": 0,
+      "turns": 4,
+      "toolCalls": [],
+      "inputTokens": 9911,
+      "outputTokens": 1540,
+      "ms": 15581,
+      "notes": [
+        "Some items come from the deterministic coach because the model returned fewer than three valid ones."
+      ]
+    },
+    {
+      "id": "p24-lake",
+      "register": "personal",
+      "goal": "balanced",
+      "words": 180,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 7630,
+      "outputTokens": 1050,
+      "ms": 12029,
+      "notes": []
+    },
+    {
+      "id": "p25-hale",
+      "register": "fiction",
+      "goal": "vivid",
+      "words": 46,
+      "status": "submitted",
+      "submits": [
+        {
+          "submitted": 3,
+          "valid": 3,
+          "ok": true
+        }
+      ],
+      "modelItems": 3,
+      "backfilled": 0,
+      "dropped": 0,
+      "turns": 3,
+      "toolCalls": [],
+      "inputTokens": 6407,
+      "outputTokens": 901,
+      "ms": 10249,
+      "notes": []
+    }
+  ]
+}

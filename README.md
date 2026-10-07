@@ -35,7 +35,7 @@ ANTHROPIC_API_KEY=sk-ant-... npm start
 OPENAI_API_KEY=sk-... npm start
 ```
 
-The live-model path is tested only against mocked HTTP responses. See [PROOF.md](PROOF.md).
+The live-model path was run once over all 25 eval passages on three models (`npm run eval:agent`). Haiku 4.5: 21 of 25 first submits passed validation in full, no fallbacks. Haiku 5.5: 23 of 25, three cents for the run. Sonnet 5.5: 22 of 25. Tables in [PROOF.md](PROOF.md) and `evals/results/`.
 
 ## Commands
 
