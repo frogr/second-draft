@@ -377,10 +377,10 @@ async function boot() {
   const mode = $('mode');
   const modelToggle = $('model-toggle');
   if (llm?.available) {
-    mode.textContent = `Model available: ${llm.model}`;
+    mode.replaceChildren(h('span', { class: 'wide' }, 'Model available: '), llm.model ?? 'model');
     modelToggle.hidden = false;
   } else {
-    mode.textContent = 'Deterministic coach · no API key on this server';
+    mode.replaceChildren('Deterministic coach', h('span', { class: 'wide' }, ' · no API key on this server'));
     modelToggle.hidden = true;
   }
   renderGoals();

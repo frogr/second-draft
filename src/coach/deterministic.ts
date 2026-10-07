@@ -240,7 +240,9 @@ function exercise(f: Finding, s: Sentence, analysis: Analysis): string {
     case 'adverb':
       return `List five verbs that could replace the verb and ${q(f.text)} in sentence ${n}. Pick the one a reader could picture.${more}`;
     case 'cliche':
-      return `Write three replacements for ${q(f.text)} that could only appear in this piece: one concrete object, one sound or smell, one plain statement.${more}`;
+      return f.kind === 'business' || f.kind === 'essay'
+        ? `Replace ${q(f.text)} with one fact only you could write: something you built, a result you can back up, or a person you helped.${more}`
+        : `Write three replacements for ${q(f.text)} that could only appear in this piece: one concrete object, one sound or smell, one plain statement.${more}`;
     case 'repetition':
       return `Circle every ${q(f.text)} in the paragraph. Keep the one that matters most and recast the others.`;
     case 'dialogue_tag':
