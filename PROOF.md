@@ -44,9 +44,9 @@ Second Draft eval: 25 synthetic passages, 106 labels
 | readability | 1 | 1 | 1 | 0 | 0 | 100% | 100% |
 | **all** | 106 | 103 | 91 | 12 | 15 | 88% | 86% |
 
-How to read it. The 25 passages in `evals/passages.ts` are fiction, cover letters, essays, business notes and personal essays, 4 of them clean controls. I wrote the labels from an editor's point of view before running the detectors, so they include things the detectors were never going to catch ("a shot rang out" is not in the cliche list; "might" is a hedge the filler list does not have). A finding counts as a hit if it overlaps a label for the same detector.
+How to read it. The 25 passages in `evals/passages.ts` are fiction, cover letters, essays, business notes and personal essays, 4 of them clean controls. The labels were written from an editor's point of view before the detectors were run, so they include things the detectors were never going to catch ("a shot rang out" is not in the cliche list; "might" is a hedge the filler list does not have). A finding counts as a hit if it overlaps a label for the same detector.
 
-Caveats: the set is small, I wrote both the passages and the detectors, and four detectors have five labels or fewer, so their percentages say little. Treat this as a regression harness and an honest error list, not a benchmark.
+Caveats: the set is small, the passages and the detectors were written in the same project, and four detectors have five labels or fewer, so their percentages say little. Treat this as a regression harness and an honest error list, not a benchmark.
 
 ## Validator eval
 
@@ -133,7 +133,7 @@ mode: deterministic
 
 ## Screenshots
 
-Taken with Playwright (a browser automation library) against the production build, no API key, with `npm run screenshots`. Desktop at 1280x800, phone at 390x844. I looked at each one and fixed what was off (a diff that split bracketed prompts, "an a busy team", a blank column while scrolling, a wrapped header on the phone).
+Taken with Playwright (a browser automation library) against the production build, no API key, with `npm run screenshots`. Desktop at 1280x800, phone at 390x844. Each one was reviewed and what was off was fixed (a diff that split bracketed prompts, "an a busy team", a blank column while scrolling, a wrapped header on the phone).
 
 - `docs/screenshots/01-empty-desk.png`: the empty desk
 - `docs/screenshots/02-fiction-draft.png`: the overwritten fiction sample loaded
