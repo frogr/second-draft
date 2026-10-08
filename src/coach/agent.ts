@@ -83,7 +83,14 @@ export async function runAgent(provider: Provider, ctx: ToolContext, limits: Age
       const turn = await provider.complete({ system: systemPrompt(), messages, tools: TOOL_DEFS, maxTokens: limits.maxTokensPerTurn, signal: controller.signal });
       usage.inputTokens += turn.usage.input;
       usage.outputTokens += turn.usage.output;
-      add({ kind: 'model', name: provider.model, output: turn.toolCalls.length ? `asked for ${turn.toolCalls.map((c) => c.name).join(', ')}` : clip(turn.text || '(no text)', 160), ms: now() - t0, ok: true });
+      const cutOff = turn.stopReason === 'max_tokens' || turn.stopReason === 'length';
+      add({
+        kind: 'model',
+        name: provider.model,
+        output: (turn.toolCalls.length ? `asked for ${turn.toolCalls.map((c) => c.name).join(', ')}` : clip(turn.text || '(no text)', 160)) + (cutOff ? ' (reply cut off at the token limit)' : ''),
+        ms: now() - t0,
+        ok: !cutOff,
+      });
       messages.push({ role: 'assistant', text: turn.text, toolCalls: turn.toolCalls });
 
       if (!turn.toolCalls.length) {

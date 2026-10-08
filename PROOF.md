@@ -161,7 +161,7 @@ Taken with Playwright (a browser automation library) against the production buil
 | Cost for the run | $0.29 | $0.03 | $0.54 |
 | Latency per passage p50 / p95 | 10055 / 15581 ms | 7117 / 13283 ms | 8480 / 14294 ms |
 
-Every item shown passed the validator, by construction. What varied was how the model got there. Haiku 4.5 missed on quotes (four passages had an item whose quote was not verbatim) and the repair turn fixed all four. Haiku 5.5 never submitted a bad quote; its two repairs were submits with no items at all. Sonnet 5.5 had two fiction passages where every quote in the first submit failed, and after the repair turn two items were still dropped. On a clean control passage each model submitted fewer than three items and the deterministic coach filled one. Run-to-run variance was not measured.
+Every item shown passed the validator, by construction. What varied was how the model got there. Haiku 4.5 missed on quotes (four passages had an item whose quote was not verbatim) and the repair turn fixed all four. Haiku 5.5 never submitted a bad quote; its two repairs were submits with no items at all. Sonnet 5.5 had two fiction passages where every item in the first submit was rejected as `missing_field` (a required string missing or empty), and on one of them two items were still dropped after the repair turn. Rerun on those passages alone (`--only p11-bus,p20-baby,p17-ridge`), all three passed on the first submit, so the cause did not reproduce. Model steps in the trace now say when a reply was cut off at the per-turn token limit, which is the first thing to check if it recurs. On a clean control passage each model submitted fewer than three items and the deterministic coach filled one. Run-to-run variance was not measured.
 
 ## Not verified
 

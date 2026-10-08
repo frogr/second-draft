@@ -12,6 +12,7 @@
  * Writes evals/results/agent-<model>.json and agent-<model>.md.
  *
  *   npm run eval:agent -- --limit 3          a quick look
+ *   npm run eval:agent -- --only p11-bus      one or more passages by id, with the validator's messages (no files written)
  *   ANTHROPIC_MODEL=claude-haiku-4-5 npm run eval:agent
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -34,6 +35,9 @@ const GOAL_FOR: Record<Passage['register'], Goal> = { fiction: 'vivid', cover_le
 const args = process.argv.slice(2);
 const limitArg = args.indexOf('--limit');
 const limit = limitArg >= 0 ? Number.parseInt(args[limitArg + 1], 10) : Infinity;
+const onlyArg = args.indexOf('--only');
+const only = onlyArg >= 0 ? new Set(args[onlyArg + 1].split(',')) : null;
+const partial = only !== null || Number.isFinite(limit);
 
 const provider = pickProvider(process.env);
 if (!provider) {
@@ -59,10 +63,12 @@ interface Row {
   outputTokens: number;
   ms: number;
   notes: string[];
+  /** what the validator said on each submit, verbatim */
+  validator: string[];
 }
 
 const rows: Row[] = [];
-for (const p of PASSAGES.slice(0, Number.isFinite(limit) ? limit : undefined)) {
+for (const p of PASSAGES.filter((x) => !only || only.has(x.id)).slice(0, Number.isFinite(limit) ? limit : undefined)) {
   const goal = GOAL_FOR[p.register];
   const t0 = performance.now();
   const r = await coach({ draft: p.text, goal, provider });
@@ -92,8 +98,10 @@ for (const p of PASSAGES.slice(0, Number.isFinite(limit) ? limit : undefined)) {
     outputTokens: r.usage?.outputTokens ?? 0,
     ms,
     notes: r.notes,
+    validator: r.trace.filter((s) => s.kind === 'validator').map((s) => s.output),
   };
   rows.push(row);
+  if (only) for (const st of r.trace) if (st.kind === 'model' || st.kind === 'validator') console.log(`    ${st.kind}: ${st.output}`);
   const first = submits[0];
   console.log(
     `${p.id} [${p.register}/${goal}] ${row.status}${row.failure ? ` (${row.failure})` : ''} first submit ${first ? `${first.valid}/${first.submitted}` : 'none'}${submits.length > 1 ? ` repair ${submits[1].valid}/${submits[1].submitted}` : ''} items model ${row.modelItems} backfilled ${row.backfilled} turns ${row.turns} ${row.inputTokens + row.outputTokens} tok ${ms}ms`,
@@ -144,6 +152,10 @@ const byRegister = [...new Set(rows.map((r) => r.register))].map((register) => {
   return { register, n: rs.length, finished: rs.filter((r) => r.status === 'submitted').length, firstClean: ws.filter((r) => r.submits[0].ok).length, repaired: ws.filter((r) => r.submits.length > 1).length, meanTurns: Math.round((sum(rs.map((r) => r.turns)) / Math.max(1, rs.length)) * 10) / 10 };
 });
 
+if (partial) {
+  console.log('\npartial run, nothing written');
+  process.exit(0);
+}
 const outDir = join(process.cwd(), 'evals/results');
 mkdirSync(outDir, { recursive: true });
 const slug = provider.model.replace(/[^a-z0-9.-]/gi, '_');
